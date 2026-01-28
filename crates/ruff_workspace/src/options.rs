@@ -23,7 +23,7 @@ use ruff_linter::rules::flake8_tidy_imports::settings::{ApiBan, Strictness};
 use ruff_linter::rules::isort::settings::RelativeImportsOrder;
 use ruff_linter::rules::isort::{ImportSection, ImportType};
 use ruff_linter::rules::pep8_naming::settings::IgnoreNames;
-use ruff_linter::rules::pydocstyle::settings::Convention;
+use ruff_linter::rules::pydocstyle::settings::{Convention, OneLineDocstringStyle};
 use ruff_linter::rules::pylint::settings::ConstantType;
 use ruff_linter::rules::{
     flake8_copyright, flake8_errmsg, flake8_gettext, flake8_implicit_str_concat,
@@ -3182,6 +3182,18 @@ pub struct PydocstyleOptions {
         "#
     )]
     pub ignore_var_parameters: Option<bool>,
+
+    /// Control whether docstrings that fit on one line should remain on one
+    /// line or be expanded to multi-line form.
+    #[option(
+        default = r#""single""#,
+        value_type = r#""single" | "multi""#,
+        example = r#"
+            # Prefer multi-line docstrings even when they fit on one line.
+            one-line-docstring-style = "multi"
+        "#
+    )]
+    pub one_line_docstring_style: Option<OneLineDocstringStyle>,
 }
 
 impl PydocstyleOptions {
@@ -3191,12 +3203,14 @@ impl PydocstyleOptions {
             ignore_decorators,
             property_decorators,
             ignore_var_parameters: ignore_variadics,
+            one_line_docstring_style,
         } = self;
         pydocstyle::settings::Settings {
             convention,
             ignore_decorators: BTreeSet::from_iter(ignore_decorators.unwrap_or_default()),
             property_decorators: BTreeSet::from_iter(property_decorators.unwrap_or_default()),
             ignore_var_parameters: ignore_variadics.unwrap_or_default(),
+            one_line_docstring_style: one_line_docstring_style.unwrap_or_default(),
         }
     }
 }

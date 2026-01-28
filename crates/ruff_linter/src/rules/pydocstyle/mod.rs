@@ -12,7 +12,7 @@ mod tests {
 
     use crate::registry::Rule;
 
-    use super::settings::{Convention, Settings};
+    use super::settings::{Convention, OneLineDocstringStyle, Settings};
     use crate::test::test_path;
     use crate::{assert_diagnostics, settings};
 
@@ -110,6 +110,41 @@ mod tests {
             },
         )?;
         assert_diagnostics!(snapshot, diagnostics);
+        Ok(())
+    }
+
+    #[test]
+    fn multi_line_docstring_style() -> Result<()> {
+        let diagnostics = test_path(
+            Path::new("pydocstyle/D200_multi.py"),
+            &settings::LinterSettings {
+                pydocstyle: Settings {
+                    one_line_docstring_style: OneLineDocstringStyle::Multi,
+                    ..Settings::default()
+                },
+                ..settings::LinterSettings::for_rule(Rule::UnnecessaryMultilineDocstring)
+            },
+        )?;
+        assert_diagnostics!("D200_multi.py", diagnostics);
+        Ok(())
+    }
+
+    #[test]
+    fn multi_line_docstring_style_with_summary_on_second_line() -> Result<()> {
+        let diagnostics = test_path(
+            Path::new("pydocstyle/D200_multi.py"),
+            &settings::LinterSettings {
+                pydocstyle: Settings {
+                    one_line_docstring_style: OneLineDocstringStyle::Multi,
+                    ..Settings::default()
+                },
+                ..settings::LinterSettings::for_rules([
+                    Rule::UnnecessaryMultilineDocstring,
+                    Rule::MultiLineSummarySecondLine,
+                ])
+            },
+        )?;
+        assert_diagnostics!("D200_multi_D213.py", diagnostics);
         Ok(())
     }
 
