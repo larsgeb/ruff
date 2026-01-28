@@ -15,6 +15,31 @@ use crate::registry::Rule;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, CacheKey)]
 #[serde(deny_unknown_fields, rename_all = "kebab-case")]
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+pub enum OneLineDocstringStyle {
+    /// Prefer docstrings that fit on one line to stay on one line.
+    Single,
+    /// Prefer docstrings to use a multi-line layout.
+    Multi,
+}
+
+impl Default for OneLineDocstringStyle {
+    fn default() -> Self {
+        Self::Single
+    }
+}
+
+impl fmt::Display for OneLineDocstringStyle {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Single => write!(f, "single"),
+            Self::Multi => write!(f, "multi"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, CacheKey)]
+#[serde(deny_unknown_fields, rename_all = "kebab-case")]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
 pub enum Convention {
     /// Use Google-style docstrings.
     Google,
@@ -91,6 +116,7 @@ pub struct Settings {
     pub ignore_decorators: BTreeSet<String>,
     pub property_decorators: BTreeSet<String>,
     pub ignore_var_parameters: bool,
+    pub one_line_docstring_style: OneLineDocstringStyle,
 }
 
 impl Settings {
@@ -109,6 +135,10 @@ impl Settings {
     pub fn ignore_var_parameters(&self) -> bool {
         self.ignore_var_parameters
     }
+
+    pub fn one_line_docstring_style(&self) -> OneLineDocstringStyle {
+        self.one_line_docstring_style
+    }
 }
 
 impl fmt::Display for Settings {
@@ -120,7 +150,8 @@ impl fmt::Display for Settings {
                 self.convention | optional,
                 self.ignore_decorators | set,
                 self.property_decorators | set,
-                self.ignore_var_parameters
+                self.ignore_var_parameters,
+                self.one_line_docstring_style
             ]
         }
         Ok(())
