@@ -1,0 +1,10 @@
+---
+source: crates/ruff_linter/src/rules/pydocstyle/mod.rs
+---
+D417 Missing argument description in the docstring for `hello`: `name`
+ --> D417_missing_args_section.py:1:5
+  |
+1 | def hello(name):
+  |     ^^^^^
+2 |     """Do something.
+  |
