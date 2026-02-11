@@ -186,6 +186,22 @@ mod tests {
     }
 
     #[test]
+    fn d417_google_missing_args_section() -> Result<()> {
+        let diagnostics = test_path(
+            Path::new("pydocstyle/D417_missing_args_section.py"),
+            &settings::LinterSettings {
+                pydocstyle: Settings {
+                    convention: Some(Convention::Google),
+                    ..Settings::default()
+                },
+                ..settings::LinterSettings::for_rule(Rule::UndocumentedParam)
+            },
+        )?;
+        assert_diagnostics!(diagnostics);
+        Ok(())
+    }
+
+    #[test]
     fn d417_numpy() -> Result<()> {
         let diagnostics = test_path(
             Path::new("pydocstyle/D417.py"),

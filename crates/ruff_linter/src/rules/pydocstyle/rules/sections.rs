@@ -1184,8 +1184,8 @@ impl AlwaysFixableViolation for MissingSectionNameColon {
 /// Multiline docstrings are typically composed of a summary line, followed by
 /// a blank line, followed by a series of sections, each with a section header
 /// and a section body. Function docstrings often include a section for
-/// function arguments; this rule is concerned with that section only.
-/// Note that this rule only checks docstrings with an arguments (e.g. `Args`) section.
+/// function arguments; this rule validates that every argument in the signature
+/// is documented in the docstring.
 ///
 /// This rule is enabled when using the `google` convention, and disabled when
 /// using the `pep257` and `numpy` conventions.
@@ -2057,7 +2057,7 @@ fn parse_google_sections(
                 documented_args.extend(args_section(&section_context));
             }
         }
-        if has_args {
+        if has_args || checker.settings().pydocstyle.convention == Some(Convention::Google) {
             missing_args(checker, docstring, &documented_args);
         }
     }
